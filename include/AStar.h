@@ -21,6 +21,7 @@ public:
 
 private:
     int heuristic(const std::pair<int, int>& a, const std::pair<int, int>& b);
+    std::vector<std::pair<int, int>>  reconstructPath(std::pair<int, int> start, std::pair<int, int> end);
     std::unordered_map<std::pair<int, int>, std::pair<int, int>, PairHash> cameFrom_;
     std::unordered_map<std::pair<int, int>, int, PairHash> gScore_;
     std::unordered_map<std::pair<int, int>, int, PairHash> hScore_;
