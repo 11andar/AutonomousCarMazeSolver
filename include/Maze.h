@@ -13,8 +13,8 @@ public:
     [[nodiscard]] int getHeight() const;
     [[nodiscard]] std::pair<int, int> getStart() const;
     [[nodiscard]] std::pair<int, int> getEnd() const;
-    [[nodiscard]] CellType getCellType(int row, int col) const;
-    void setCellType(int row, int col, CellType& type);
+    [[nodiscard]] CellType getCellType(std::pair<int, int>& cell) const;
+    void setCellType(std::pair<int, int>& cell, CellType& type);
     ~Maze() = default;
 
 private:

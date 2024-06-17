@@ -29,16 +29,16 @@ std::pair<int, int> Maze::getEnd() const {
     return end_;
 }
 
-CellType Maze::getCellType(const int row, const int col) const {
-    if (!isValidPosition(row, col))
+CellType Maze::getCellType(std::pair<int, int>& cell) const {
+    if (!isValidPosition(cell.first, cell.second))
         throw std::out_of_range("Invalid position, check coordinates");
-    return grid_[row][col];
+    return grid_[cell.first][cell.second];
 }
 
-void Maze::setCellType(int row, int col, CellType& type) {
-    if (!isValidPosition(row, col))
+void Maze::setCellType(std::pair<int, int>& cell, CellType& type) {
+    if (!isValidPosition(cell.first, cell.second))
         throw std::out_of_range("Invalid position, check coordinates");
-    grid_[row][col] = type;
+    grid_[cell.first][cell.second] = type;
 }
 
 bool Maze::isValidPosition(int row, int col) const {
