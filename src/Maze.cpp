@@ -35,3 +35,7 @@ void Maze::setCellType(int row, int col, CellType& type) {
         throw std::out_of_range("Invalid position, check coordinates");
     maze_[row][col] = type;
 }
+
+bool Maze::isValidPosition(int row, int col) const {
+    return (0 <= row && row <= rows_-1 && 0 <= col && col <= cols_-1);
+}
