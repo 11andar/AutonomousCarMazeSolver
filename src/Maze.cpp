@@ -6,5 +6,3 @@ Maze::Maze(const int rows, const int cols) : rows_(rows), cols_(cols) {
     maze_= std::vector<std::vector<CellType>>(rows_, std::vector<CellType>(cols_, CellType::WALL));
     generateRandomMaze();
 }
-
-
