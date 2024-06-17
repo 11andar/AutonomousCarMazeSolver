@@ -25,7 +25,7 @@ private:
 
     int rows_;
     int cols_;
-    std::vector<std::vector<CellType>> maze_;
+    std::vector<std::vector<CellType>> grid_;
     std::pair<int, int> start_;
     std::pair<int, int> end_;
 //    bool hasPathFromStartToEnd_;

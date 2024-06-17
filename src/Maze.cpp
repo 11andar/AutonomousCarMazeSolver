@@ -9,7 +9,7 @@
 Maze::Maze(const int rows, const int cols) : rows_(rows), cols_(cols) {
     start_ = {rows_ - 2, 1};
     end_ = {1, cols_-2};
-    maze_= std::vector<std::vector<CellType>>(rows_, std::vector<CellType>(cols_, CellType::WALL));
+    grid_= std::vector<std::vector<CellType>>(rows_, std::vector<CellType>(cols_, CellType::WALL));
     generateRandomMaze();
 }
 
@@ -32,13 +32,13 @@ std::pair<int, int> Maze::getEnd() const {
 CellType Maze::getCellType(const int row, const int col) const {
     if (!isValidPosition(row, col))
         throw std::out_of_range("Invalid position, check coordinates");
-    return maze_[row][col];
+    return grid_[row][col];
 }
 
 void Maze::setCellType(int row, int col, CellType& type) {
     if (!isValidPosition(row, col))
         throw std::out_of_range("Invalid position, check coordinates");
-    maze_[row][col] = type;
+    grid_[row][col] = type;
 }
 
 bool Maze::isValidPosition(int row, int col) const {
@@ -68,7 +68,7 @@ bool Maze::hasPathFromStartToEnd() const {
             int ny = y + dy;
             int nx = x + dx;
 
-            if (isValidPosition(ny, nx) && !visited[ny][nx] && maze_[ny][nx] != CellType::WALL) {
+            if (isValidPosition(ny, nx) && !visited[ny][nx] && grid_[ny][nx] != CellType::WALL) {
                 queue.emplace(ny, nx);
                 visited[ny][nx] = true;
             }
@@ -78,7 +78,7 @@ bool Maze::hasPathFromStartToEnd() const {
 }
 
 void Maze::resetMaze() {
-    maze_ = std::vector<std::vector<CellType>>(rows_, std::vector<CellType>(cols_, CellType::WALL));
+    grid_ = std::vector<std::vector<CellType>>(rows_, std::vector<CellType>(cols_, CellType::WALL));
 }
 
 void Maze::generateRandomMaze() {
@@ -89,8 +89,8 @@ void Maze::generateRandomMaze() {
 
     std::mt19937 rng(std::chrono::system_clock::now().time_since_epoch().count());
 
-    maze_[start_.first][start_.second] = CellType::START;
-    maze_[end_.first][end_.second] = CellType::END;
+    grid_[start_.first][start_.second] = CellType::START;
+    grid_[end_.first][end_.second] = CellType::END;
 
     auto visited = std::vector<std::vector<bool>>(rows_, std::vector<bool>(cols_, false));
 
@@ -117,13 +117,13 @@ void Maze::generateRandomMaze() {
             if (!isValidPosition(n_row, n_col))
                 continue;
 
-            if (maze_[n_row][n_col] != CellType::WALL || visited[n_row][n_col])
+            if (grid_[n_row][n_col] != CellType::WALL || visited[n_row][n_col])
                 continue;
 
             if ((y + dx != 0 && y + dx != rows_ - 1) && (x + dx != 0 && x + dx != cols_ - 1)){
-                maze_[y + dy][x + dx] = CellType::EMPTY;
+                grid_[y + dy][x + dx] = CellType::EMPTY;
                 if ((n_row != 0 && n_row != rows_ - 1) && (n_col != 0 && n_col != cols_ - 1)) {
-                    maze_[n_row][n_col] = CellType::EMPTY;
+                    grid_[n_row][n_col] = CellType::EMPTY;
                     stack.emplace(n_row, n_col);
                 }
             }
