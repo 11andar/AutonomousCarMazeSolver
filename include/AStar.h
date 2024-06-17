@@ -4,6 +4,15 @@
 #include <Maze.h>
 #include <unordered_map>
 
+struct PairHash {
+    template <class T1, class T2>
+    std::size_t operator() (const std::pair<T1, T2>& pair) const {
+        auto hash1 = std::hash<T1>{}(pair.first);
+        auto hash2 = std::hash<T2>{}(pair.second);
+        return hash1 ^ (hash2 << 1);
+    }
+};
+
 class AStar {
 public:
     AStar(const Maze& maze);
@@ -12,9 +21,9 @@ public:
 
 private:
     int heuristic(const std::pair<int, int>& a, const std::pair<int, int>& b);
-    std::unordered_map<std::pair<int, int>, std::pair<int, int>> cameFrom_;
-    std::unordered_map<std::pair<int, int>, int> gScore_;
-    std::unordered_map<std::pair<int, int>, int> hScore_;
+    std::unordered_map<std::pair<int, int>, std::pair<int, int>, PairHash> cameFrom_;
+    std::unordered_map<std::pair<int, int>, int, PairHash> gScore_;
+    std::unordered_map<std::pair<int, int>, int, PairHash> hScore_;
 
     const Maze& maze_;
 };
