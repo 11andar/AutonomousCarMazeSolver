@@ -1,5 +1,6 @@
 #include <Maze.h>
 #include <stdexcept>
+#include <chrono>
 #include <array>
 #include <stack>
 #include <algorithm>
@@ -74,4 +75,8 @@ bool Maze::hasPathFromStartToEnd() const {
         }
     }
     return false;
+}
+
+void Maze::resetMaze() {
+    maze_ = std::vector<std::vector<CellType>>(rows_, std::vector<CellType>(cols_, CellType::WALL));
 }
