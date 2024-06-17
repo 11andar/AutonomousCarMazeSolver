@@ -20,8 +20,8 @@ public:
 private:
     [[nodiscard]] bool isValidPosition(int row, int col) const;
     [[nodiscard]] bool hasPathFromStartToEnd() const;
-    void generateRandomMaze();
     void resetMaze();
+    void generateRandomMaze();
 
     int rows_;
     int cols_;
