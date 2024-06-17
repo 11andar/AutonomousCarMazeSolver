@@ -80,3 +80,58 @@ bool Maze::hasPathFromStartToEnd() const {
 void Maze::resetMaze() {
     maze_ = std::vector<std::vector<CellType>>(rows_, std::vector<CellType>(cols_, CellType::WALL));
 }
+
+void Maze::generateRandomMaze() {
+    static int generation_attempts = 0;
+    if (++generation_attempts > 1000) {
+        throw std::runtime_error("Exceeded maximum maze generation attempts");
+    }
+
+    std::mt19937 rng(std::chrono::system_clock::now().time_since_epoch().count());
+
+    maze_[start_.first][start_.second] = CellType::START;
+    maze_[end_.first][end_.second] = CellType::END;
+
+    auto visited = std::vector<std::vector<bool>>(rows_, std::vector<bool>(cols_, false));
+
+    std::stack<std::pair<int, int>> stack;
+    stack.emplace(start_.first, start_.second);
+
+    static const std::array<std::pair<int, int>, 4> directions = {
+            {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}
+    };
+
+
+    while (!stack.empty()) {
+        auto [y, x] = stack.top();
+        stack.pop();
+        visited[y][x] = true;
+
+        std::array<std::pair<int, int>, 4> shuffled_directions = directions;
+        std::shuffle(shuffled_directions.begin(), shuffled_directions.end(), rng);
+
+        for (const auto& [dy, dx] : shuffled_directions) {
+            int n_row = y + dy * 2;
+            int n_col = x + dx * 2;
+
+            if (!isValidPosition(n_row, n_col))
+                continue;
+
+            if (maze_[n_row][n_col] != CellType::WALL || visited[n_row][n_col])
+                continue;
+
+            if ((y + dx != 0 && y + dx != rows_ - 1) && (x + dx != 0 && x + dx != cols_ - 1)){
+                maze_[y + dy][x + dx] = CellType::EMPTY;
+                if ((n_row != 0 && n_row != rows_ - 1) && (n_col != 0 && n_col != cols_ - 1)) {
+                    maze_[n_row][n_col] = CellType::EMPTY;
+                    stack.emplace(n_row, n_col);
+                }
+            }
+        }
+    }
+
+    if (!hasPathFromStartToEnd()) {
+        resetMaze();
+        generateRandomMaze();
+    }
+}
