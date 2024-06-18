@@ -3,6 +3,7 @@
 
 #include <Maze.h>
 #include <unordered_map>
+#include <queue>
 
 struct PairHash {
     template <class T1, class T2>
@@ -16,9 +17,9 @@ struct PairHash {
 class AStar {
 public:
     AStar(const Maze& maze);
-    std::vector<std::pair<int, int>> getPath();
-    std::vector<std::pair<int, int>> findPath();
+    void step();
     bool isFinished() const;
+    std::vector<std::pair<int, int>> getPath();
     ~AStar() = default;
 
 private:
@@ -26,11 +27,15 @@ private:
     std::vector<std::pair<int, int>> reconstructPath(std::pair<int, int>& start, std::pair<int, int>& end);
 
     Maze maze_;
+    bool finished_;
     std::vector<std::pair<int, int>> path_;
-    std::unordered_map<std::pair<int, int>, std::pair<int, int>, PairHash> cameFrom_;
     std::unordered_map<std::pair<int, int>, int, PairHash> gScore_;
     std::unordered_map<std::pair<int, int>, int, PairHash> hScore_;
-    bool finished_;
+    std::unordered_map<std::pair<int, int>, std::pair<int, int>, PairHash> cameFrom_;
+
+    using Node = std::pair<int, std::pair<int, int>>;
+    using PriorityQueue = std::priority_queue<Node, std::vector<Node>, std::greater<>>;
+    PriorityQueue nodesToExpand_;
 
 };
 

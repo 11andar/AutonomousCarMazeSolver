@@ -1,7 +1,9 @@
 #include <AStar.h>
 #include <algorithm>
 
-AStar::AStar(const Maze &maze) : maze_(maze), finished_(false) {}
+AStar::AStar(const Maze &maze) : maze_(maze), finished_(false) {
+    nodesToExpand_.emplace(0, maze_.getStart());
+}
 
 std::vector<std::pair<int, int>> AStar::getPath() {
     if (!finished_)
@@ -9,59 +11,46 @@ std::vector<std::pair<int, int>> AStar::getPath() {
     return reconstructPath(maze_.getStart(), maze_.getEnd());
 }
 
-bool AStar::isFinished() const {
-    return finished_;
-}
+void AStar::step() {
+    if (finished_ || nodesToExpand_.empty()) {
+        return;
+    }
 
-std::vector<std::pair<int, int>> AStar::findPath() {
     using Cell = std::pair<int, int>;
-    using Path = std::vector<Cell>;
 
-    Cell start = maze_.getStart();
-    Cell end = maze_.getEnd();
+    Cell current = nodesToExpand_.top().second;
+    nodesToExpand_.pop();
 
-    Path nodesToExpand;
-    nodesToExpand.push_back(start);
+    if (current == maze_.getEnd()) {
+        finished_ = true;
+        return;
+    }
 
-    cameFrom_.clear();
-    gScore_[start] = 0;
-    hScore_[start] = heuristic(start, end);
+    static const std::array<std::pair<int, int>, 4> directions = {
+            {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}
+    };
 
-    while (!nodesToExpand.empty()) {
-        Cell current = *std::min_element(nodesToExpand.begin(), nodesToExpand.end(),
-                                                [this, &end](const Cell& a, const Cell& b)
-                                                { return hScore_[a] > hScore_[b]; });
-        if (current == end)
-            break;
+    for (const auto& [dy, dx] : directions) {
+        Cell neighbor = {current.first + dy, current.second + dx};
 
-        nodesToExpand.erase(std::find(nodesToExpand.begin(), nodesToExpand.end(), current));
+        if (!maze_.isValidPosition(neighbor.first, neighbor.second) ||
+            maze_.getCellType(neighbor) == CellType::WALL)
+            continue;
 
-        static const std::array<std::pair<int, int>, 4> directions = {
-                {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}
-        };
+        int approximateGScore = gScore_[current] + 1;
 
-        for (const auto& [dy, dx] : directions) {
-            Cell neighbor = {current.first + dy, current.second + dx};
+        if (gScore_.find(neighbor) == gScore_.end() || approximateGScore < gScore_[neighbor]) {
+            cameFrom_[neighbor] = current;
+            gScore_[neighbor] = approximateGScore;
+            hScore_[neighbor] = gScore_[neighbor] + heuristic(neighbor, maze_.getEnd());
 
-            if (!maze_.isValidPosition(neighbor.first, neighbor.second) ||
-                maze_.getCellType(neighbor) == CellType::WALL) {
-                continue;
-            }
-
-            int approximateGScore = gScore_[current] + 1;
-
-            if (gScore_.find(neighbor) == gScore_.end() || approximateGScore < gScore_[neighbor]) {
-                cameFrom_[neighbor] = current;
-                gScore_[neighbor] = approximateGScore;
-                hScore_[neighbor] = gScore_[neighbor] + heuristic(neighbor, end);
-
-                if (std::find(nodesToExpand.begin(), nodesToExpand.end(), neighbor) == nodesToExpand.end())
-                    nodesToExpand.push_back(neighbor);
-            }
+            nodesToExpand_.emplace(hScore_[neighbor], neighbor);
         }
     }
-    path_ = reconstructPath(start, end);
-    return path_;
+}
+
+bool AStar::isFinished() const {
+    return finished_;
 }
 
 int AStar::heuristic(const std::pair<int, int>& a, const std::pair<int, int>& b) {
@@ -80,6 +69,7 @@ std::vector<std::pair<int, int>> AStar::reconstructPath(std::pair<int, int>& sta
         current = cameFrom_[current];
     }
 
+    path.push_back(maze_.getStart());
     std::reverse(path.begin(), path.end());
 
     return path;
