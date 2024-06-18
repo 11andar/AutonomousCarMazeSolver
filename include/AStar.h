@@ -4,6 +4,7 @@
 #include <Maze.h>
 #include <unordered_map>
 #include <queue>
+#include <functional>
 
 struct PairHash {
     template <class T1, class T2>
@@ -16,9 +17,10 @@ struct PairHash {
 
 class AStar {
 public:
-    AStar(const Maze& maze);
+    AStar(const Maze& maze, std::function<void()> updateCallback);
     void step();
     bool isFinished() const;
+    bool expansionOccurred() const;
     std::vector<std::pair<int, int>> getPath();
     ~AStar() = default;
 
@@ -28,6 +30,7 @@ private:
 
     Maze maze_;
     bool finished_;
+    bool expansionOccurred_;
     std::vector<std::pair<int, int>> path_;
     std::unordered_map<std::pair<int, int>, int, PairHash> gScore_;
     std::unordered_map<std::pair<int, int>, int, PairHash> hScore_;
@@ -37,6 +40,7 @@ private:
     using PriorityQueue = std::priority_queue<Node, std::vector<Node>, std::greater<>>;
     PriorityQueue nodesToExpand_;
 
+    std::function<void()> updateCallback_;
 };
 
 #endif

@@ -1,14 +1,10 @@
 #include <AStar.h>
 #include <algorithm>
+#include <utility>
 
-AStar::AStar(const Maze &maze) : maze_(maze), finished_(false) {
+AStar::AStar(const Maze &maze, std::function<void()> updateCallback) : maze_(maze), finished_(false),
+expansionOccurred_(false), updateCallback_(std::move(updateCallback)) {
     nodesToExpand_.emplace(0, maze_.getStart());
-}
-
-std::vector<std::pair<int, int>> AStar::getPath() {
-    if (!finished_)
-        return {};
-    return reconstructPath(maze_.getStart(), maze_.getEnd());
 }
 
 void AStar::step() {
@@ -31,6 +27,7 @@ void AStar::step() {
     };
 
     for (const auto& [dy, dx] : directions) {
+        expansionOccurred_ = false;
         Cell neighbor = {current.first + dy, current.second + dx};
 
         if (!maze_.isValidPosition(neighbor.first, neighbor.second) ||
@@ -45,12 +42,31 @@ void AStar::step() {
             hScore_[neighbor] = gScore_[neighbor] + heuristic(neighbor, maze_.getEnd());
 
             nodesToExpand_.emplace(hScore_[neighbor], neighbor);
+
+            CellType cellType = CellType::VISITED;
+            maze_.setCellType(neighbor, cellType);
+            maze_.setCellType(current, cellType);
+            expansionOccurred_ = true;
+        }
+
+        if (expansionOccurred_ && updateCallback_) {
+            updateCallback_();
         }
     }
 }
 
 bool AStar::isFinished() const {
     return finished_;
+}
+
+bool AStar::expansionOccurred() const {
+    return expansionOccurred_;
+}
+
+std::vector<std::pair<int, int>> AStar::getPath() {
+    if (!finished_)
+        return {};
+    return reconstructPath(maze_.getStart(), maze_.getEnd());
 }
 
 int AStar::heuristic(const std::pair<int, int>& a, const std::pair<int, int>& b) {
@@ -74,5 +90,3 @@ std::vector<std::pair<int, int>> AStar::reconstructPath(std::pair<int, int>& sta
 
     return path;
 }
-
-
