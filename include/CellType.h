@@ -5,7 +5,9 @@ enum class CellType {
     EMPTY,
     WALL,
     START,
-    END
+    END,
+    VISITED,
+    CURRENT
 };
 
 #endif
