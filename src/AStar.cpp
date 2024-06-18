@@ -1,7 +1,17 @@
 #include <AStar.h>
 #include <algorithm>
 
-AStar::AStar(const Maze &maze) : maze_(maze) {}
+AStar::AStar(const Maze &maze) : maze_(maze), finished_(false) {}
+
+std::vector<std::pair<int, int>> AStar::getPath() {
+    if (!finished_)
+        return {};
+    return reconstructPath(maze_.getStart(), maze_.getEnd());
+}
+
+bool AStar::isFinished() const {
+    return finished_;
+}
 
 std::vector<std::pair<int, int>> AStar::findPath() {
     using Cell = std::pair<int, int>;
@@ -74,3 +84,5 @@ std::vector<std::pair<int, int>> AStar::reconstructPath(std::pair<int, int>& sta
 
     return path;
 }
+
+

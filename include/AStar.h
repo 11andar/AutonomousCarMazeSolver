@@ -16,18 +16,21 @@ struct PairHash {
 class AStar {
 public:
     AStar(const Maze& maze);
+    std::vector<std::pair<int, int>> getPath();
     std::vector<std::pair<int, int>> findPath();
+    bool isFinished() const;
     ~AStar() = default;
 
 private:
     int heuristic(const std::pair<int, int>& a, const std::pair<int, int>& b);
     std::vector<std::pair<int, int>> reconstructPath(std::pair<int, int>& start, std::pair<int, int>& end);
 
-    const Maze& maze_;
+    Maze maze_;
     std::vector<std::pair<int, int>> path_;
     std::unordered_map<std::pair<int, int>, std::pair<int, int>, PairHash> cameFrom_;
     std::unordered_map<std::pair<int, int>, int, PairHash> gScore_;
     std::unordered_map<std::pair<int, int>, int, PairHash> hScore_;
+    bool finished_;
 
 };
 
