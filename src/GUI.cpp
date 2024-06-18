@@ -2,7 +2,7 @@
 
 GUI::GUI(int rows, int cols, int cellSize): rows_(rows), cols_(cols),
                                             maze_(Maze(rows, cols)),
-                                            aStar_(AStar(maze_)),
+                                            aStar_(AStar(maze_, [this]() { this->onMazeUpdate(); })),
                                             cellSize_(cellSize), runAStar_(false) {
     windowWidth_ = cols_ * cellSize_;
     windowHeight_ = rows_ * cellSize_ + 60;
@@ -53,6 +53,11 @@ void GUI::processEvents() {
 void GUI::update() {
     if (runAStar_ && !aStar_.isFinished()) {
         aStar_.step();
+        if (aStar_.expansionOccurred()) {
+            drawMaze();
+            window_.display();
+            sf::sleep(sf::milliseconds(50));
+        }
     }
 }
 
@@ -83,12 +88,11 @@ void GUI::drawMaze() {
                 cell.setFillColor(sf::Color::Red);
             } else if (cellType == CellType::CURRENT) {
                 cell.setFillColor(sf::Color::Cyan);
-            } else if (cellType == CellType::EXPLORING) {
-                cell.setFillColor(sf::Color::Magenta);
+            } else if (cellType == CellType::VISITED) {
+                cell.setFillColor(sf::Color::Yellow);
             } else {
                 cell.setFillColor(sf::Color::White);
             }
-
             window_.draw(cell);
         }
     }
@@ -113,4 +117,10 @@ void GUI::drawPath() {
             cell.setFillColor(sf::Color::Cyan);
         window_.draw(cell);
     }
+}
+
+void GUI::onMazeUpdate() {
+    window_.clear();
+    drawMaze();
+    window_.display();
 }

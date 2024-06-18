@@ -4,8 +4,9 @@
 #include <SFML/Graphics.hpp>
 #include "Maze.h"
 #include "AStar.h"
+#include "MazeObserver.h"
 
-class GUI {
+class GUI : public MazeObserver {
 public:
     GUI(int rows, int cols, int cellSize);
     void run();
@@ -17,6 +18,7 @@ private:
     void drawMaze();
     void drawButtons();
     void drawPath();
+    void onMazeUpdate() override;
 
     sf::RenderWindow window_;
     Maze maze_;
