@@ -11,14 +11,14 @@ public:
     Maze(int rows, int cols);
     [[nodiscard]] int getWidth() const;
     [[nodiscard]] int getHeight() const;
-    [[nodiscard]] std::pair<int, int> getStart() const;
-    [[nodiscard]] std::pair<int, int> getEnd() const;
+    [[nodiscard]] std::pair<int, int>& getStart() ;
+    [[nodiscard]] std::pair<int, int>& getEnd();
     [[nodiscard]] CellType getCellType(std::pair<int, int>& cell) const;
     void setCellType(std::pair<int, int>& cell, CellType& type);
+    [[nodiscard]] bool isValidPosition(int row, int col) const;
     ~Maze() = default;
 
 private:
-    [[nodiscard]] bool isValidPosition(int row, int col) const;
     [[nodiscard]] bool hasPathFromStartToEnd() const;
     void resetMaze();
     void generateRandomMaze();

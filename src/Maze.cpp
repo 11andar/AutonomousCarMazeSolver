@@ -21,11 +21,11 @@ int Maze::getHeight() const {
     return rows_;
 }
 
-std::pair<int, int> Maze::getStart() const {
+std::pair<int, int>& Maze::getStart() {
     return start_;
 }
 
-std::pair<int, int> Maze::getEnd() const {
+std::pair<int, int>& Maze::getEnd() {
     return end_;
 }
 
