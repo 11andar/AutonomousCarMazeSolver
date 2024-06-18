@@ -21,12 +21,14 @@ public:
 
 private:
     int heuristic(const std::pair<int, int>& a, const std::pair<int, int>& b);
-    std::vector<std::pair<int, int>>  reconstructPath(std::pair<int, int> start, std::pair<int, int> end);
+    std::vector<std::pair<int, int>> reconstructPath(std::pair<int, int>& start, std::pair<int, int>& end);
+
+    const Maze& maze_;
+    std::vector<std::pair<int, int>> path_;
     std::unordered_map<std::pair<int, int>, std::pair<int, int>, PairHash> cameFrom_;
     std::unordered_map<std::pair<int, int>, int, PairHash> gScore_;
     std::unordered_map<std::pair<int, int>, int, PairHash> hScore_;
 
-    const Maze& maze_;
 };
 
 #endif
